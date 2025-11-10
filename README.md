@@ -138,8 +138,6 @@ python iniciar_sistema.py
 
 - **[COMO_INICIAR.md](./COMO_INICIAR.md)** - Guía rápida de inicio (empieza aquí) ⭐
 - **[INSTRUCCIONES_INSTALACION.md](./INSTRUCCIONES_INSTALACION.md)** - Guía completa de instalación
-- **[CAMBIOS_v2.0.md](./CAMBIOS_v2.0.md)** - Changelog versión 2.0
-- **[RESUMEN_FINAL.md](./RESUMEN_FINAL.md)** - Documentación técnica completa
 - **[dbEmpresa.sql](./dbEmpresa.sql)** - Estructura de base de datos
 
 ## 🐛 Solución de Problemas
