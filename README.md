@@ -4,7 +4,7 @@ Sistema integral de gestión de RRHH con interfaz gráfica desarrollado en Pytho
 
 ## ⚡ INICIO RÁPIDO
 
-### � Instalación Automática (3 pasos)
+### Instalación Automática (3 pasos)
 
 ```bash
 # 1. Instalar Python 3.8+ (https://www.python.org/downloads/)
@@ -22,7 +22,7 @@ python iniciar_sistema.py
 
 ---
 
-## �📋 Tabla de Contenidos
+## 📋 Tabla de Contenidos
 
 - [Características](#características)
 - [Instalación](#instalación)
