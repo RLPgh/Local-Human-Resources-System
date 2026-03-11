@@ -3,6 +3,7 @@ Vista principal para Gerente
 """
 
 import tkinter as tk
+import customtkinter as ctk
 from tkinter import ttk
 import config
 from controllers.department_controller import DepartmentController
@@ -26,21 +27,18 @@ class ManagerView:
         
         self.root.title(f"{config.APP_CONFIG['titulo_app']} - Gerente")
         UIHelpers.centrar_ventana(self.root, 1000, 600)
-        self.root.configure(bg=config.COLORS['light'])
+        self.root.configure()
         
         # Header
-        header_frame = tk.Frame(self.root, bg=config.COLORS['primary'], height=60)
+        header_frame = ctk.CTkFrame(self.root, height=60)
         header_frame.pack(fill=tk.X)
         header_frame.pack_propagate(False)
         
         nombre_completo = f"{self.usuario['nombre_empleado']} {self.usuario['apellido_empleado']}"
-        tk.Label(
+        ctk.CTkLabel(
             header_frame,
             text=f"Gerente: {nombre_completo}",
-            font=('Arial', 14, 'bold'),
-            bg=config.COLORS['primary'],
-            fg=config.COLORS['white']
-        ).pack(side=tk.LEFT, padx=20, pady=15)
+            font=('Arial', 14, 'bold')).pack(side=tk.LEFT, padx=20, pady=15)
         
         UIHelpers.crear_boton(
             header_frame,
@@ -49,21 +47,21 @@ class ManagerView:
             config.COLORS['danger']
         ).pack(side=tk.RIGHT, padx=20, pady=10)
         
-        # Notebook
-        notebook = ttk.Notebook(self.root)
+        # CTkTabview nativo
+        notebook = ctk.CTkTabview(self.root)
         notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
-        self.tab_departamentos = tk.Frame(notebook, bg=config.COLORS['white'])
-        notebook.add(self.tab_departamentos, text="Gestionar Departamentos")
+        notebook.add("Gestionar Departamentos")
+        self.tab_departamentos = notebook.tab("Gestionar Departamentos")
         self.crear_tab_departamentos()
         
-        self.tab_asignaciones = tk.Frame(notebook, bg=config.COLORS['white'])
-        notebook.add(self.tab_asignaciones, text="Asignar Empleados")
+        notebook.add("Asignar Empleados")
+        self.tab_asignaciones = notebook.tab("Asignar Empleados")
         self.crear_tab_asignaciones()
     
     def crear_tab_departamentos(self):
         """Crea tab de departamentos"""
-        btn_frame = tk.Frame(self.tab_departamentos, bg=config.COLORS['white'])
+        btn_frame = ctk.CTkFrame(self.tab_departamentos)
         btn_frame.pack(pady=10)
         
         UIHelpers.crear_boton(btn_frame, "Actualizar", self.cargar_departamentos, config.COLORS['info']).pack(side=tk.LEFT, padx=5)
@@ -81,7 +79,7 @@ class ManagerView:
     
     def crear_tab_asignaciones(self):
         """Crea tab de asignaciones"""
-        btn_frame = tk.Frame(self.tab_asignaciones, bg=config.COLORS['white'])
+        btn_frame = ctk.CTkFrame(self.tab_asignaciones)
         btn_frame.pack(pady=10)
         
         UIHelpers.crear_boton(btn_frame, "Actualizar", self.cargar_empleados_sin_dept, config.COLORS['info']).pack(side=tk.LEFT, padx=5)
@@ -112,9 +110,11 @@ class ManagerView:
     
     def nuevo_departamento(self):
         """Crea departamento"""
-        ventana = tk.Toplevel(self.root)
+        ventana = ctk.CTkToplevel(self.root)
         ventana.title("Nuevo Departamento")
         UIHelpers.centrar_ventana(ventana, 400, 150)
+        ventana.transient(self.root)
+        ventana.grab_set()
         
         frame = UIHelpers.crear_frame_con_titulo(ventana, "Datos")
         frame.pack(pady=10, padx=10)
@@ -147,9 +147,11 @@ class ManagerView:
         valores = self.tabla_departamentos.item(seleccion[0])['values']
         id_dept = valores[0]
         
-        ventana = tk.Toplevel(self.root)
+        ventana = ctk.CTkToplevel(self.root)
         ventana.title("Editar Departamento")
         UIHelpers.centrar_ventana(ventana, 400, 150)
+        ventana.transient(self.root)
+        ventana.grab_set()
         
         frame = UIHelpers.crear_frame_con_titulo(ventana, "Datos")
         frame.pack(pady=10, padx=10)
@@ -213,9 +215,11 @@ class ManagerView:
         valores = self.tabla_empleados.item(seleccion[0])['values']
         id_empleado = valores[0]
         
-        ventana = tk.Toplevel(self.root)
+        ventana = ctk.CTkToplevel(self.root)
         ventana.title("Asignar a Departamento")
         UIHelpers.centrar_ventana(ventana, 350, 150)
+        ventana.transient(self.root)
+        ventana.grab_set()
         
         frame = UIHelpers.crear_frame_con_titulo(ventana, "Asignación")
         frame.pack(pady=10, padx=10)
@@ -240,9 +244,11 @@ class ManagerView:
     
     def desasignar_empleado(self):
         """Desasigna empleado"""
-        ventana = tk.Toplevel(self.root)
+        ventana = ctk.CTkToplevel(self.root)
         ventana.title("Desasignar Empleado")
         UIHelpers.centrar_ventana(ventana, 350, 150)
+        ventana.transient(self.root)
+        ventana.grab_set()
         
         frame = UIHelpers.crear_frame_con_titulo(ventana, "Desasignar")
         frame.pack(pady=10, padx=10)

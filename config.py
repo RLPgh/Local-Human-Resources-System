@@ -1,17 +1,15 @@
 # Configuración de conexión a la base de datos
 DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': '',  
-    'database': 'dbEmpresa'
+    'database': 'dbEmpresa.db'
 }
 
 # Configuración de la aplicación
 APP_CONFIG = {
-    'nombre_empresa': 'nombre_empresa',  # Nombre genérico de la empresa
-    'version': '1.0.0',
-    'titulo_app': 'Sistema de Gestión de Recursos Humanos',
-    'registro_publico_habilitado': True  # Controla si el registro público está disponible
+    'nombre_empresa': 'NexusHR',
+    'version': '3.0.0',
+    'titulo_app': 'Gestión de RRHH - NexusHR',
+    'registro_publico_habilitado': True,  # Controla si el registro público (el botón) está visible
+    'roles_registro_permitidos': [102]    # Por defecto, solo permite registrar Empleado
 }
 
 # Roles del sistema

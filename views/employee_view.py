@@ -3,6 +3,7 @@ Vista principal para empleados
 """
 
 import tkinter as tk
+import customtkinter as ctk
 from tkinter import ttk
 from datetime import date
 import config
@@ -40,29 +41,23 @@ class EmployeeView:
         # Configurar ventana
         self.root.title(f"{config.APP_CONFIG['titulo_app']} - Empleado")
         UIHelpers.centrar_ventana(self.root, 900, 600)
-        self.root.configure(bg=config.COLORS['light'])
+        self.root.configure()
         
         # Frame superior con información del usuario
-        header_frame = tk.Frame(self.root, bg=config.COLORS['primary'], height=60)
+        header_frame = ctk.CTkFrame(self.root, height=60)
         header_frame.pack(fill=tk.X)
         header_frame.pack_propagate(False)
         
         nombre_completo = f"{self.usuario['nombre_empleado']} {self.usuario['apellido_empleado']}"
-        tk.Label(
+        ctk.CTkLabel(
             header_frame,
             text=f"Bienvenido: {nombre_completo}",
-            font=('Arial', 14, 'bold'),
-            bg=config.COLORS['primary'],
-            fg=config.COLORS['white']
-        ).pack(side=tk.LEFT, padx=20, pady=15)
+            font=('Arial', 14, 'bold')).pack(side=tk.LEFT, padx=20, pady=15)
         
-        tk.Label(
+        ctk.CTkLabel(
             header_frame,
             text=f"Rol: Empleado",
-            font=('Arial', 10),
-            bg=config.COLORS['primary'],
-            fg=config.COLORS['white']
-        ).pack(side=tk.LEFT, padx=10)
+            font=('Arial', 10)).pack(side=tk.LEFT, padx=10)
         
         UIHelpers.crear_boton(
             header_frame,
@@ -71,23 +66,23 @@ class EmployeeView:
             config.COLORS['danger']
         ).pack(side=tk.RIGHT, padx=20, pady=10)
         
-        # Frame principal con tabs
-        notebook = ttk.Notebook(self.root)
+        # Frame principal con CTkTabview nativo
+        notebook = ctk.CTkTabview(self.root)
         notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
         # Tab 1: Registrar tiempo
-        self.tab_registrar = tk.Frame(notebook, bg=config.COLORS['white'])
-        notebook.add(self.tab_registrar, text="Registrar Tiempo")
+        notebook.add("Registrar Tiempo")
+        self.tab_registrar = notebook.tab("Registrar Tiempo")
         self.crear_tab_registrar_tiempo()
         
         # Tab 2: Mis registros
-        self.tab_registros = tk.Frame(notebook, bg=config.COLORS['white'])
-        notebook.add(self.tab_registros, text="Mis Registros")
+        notebook.add("Mis Registros")
+        self.tab_registros = notebook.tab("Mis Registros")
         self.crear_tab_mis_registros()
         
         # Tab 3: Mis proyectos
-        self.tab_proyectos = tk.Frame(notebook, bg=config.COLORS['white'])
-        notebook.add(self.tab_proyectos, text="Mis Proyectos")
+        notebook.add("Mis Proyectos")
+        self.tab_proyectos = notebook.tab("Mis Proyectos")
         self.crear_tab_mis_proyectos()
     
     def crear_tab_registrar_tiempo(self):
@@ -96,27 +91,27 @@ class EmployeeView:
         form_frame.pack(pady=20, padx=20, fill=tk.BOTH)
         
         # Fecha
-        ttk.Label(form_frame, text="Fecha:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
-        fecha_frame = tk.Frame(form_frame)
+        ctk.CTkLabel(form_frame, text="Fecha:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        fecha_frame = ctk.CTkFrame(form_frame)
         fecha_frame.grid(row=0, column=1, padx=5, pady=5, sticky="w")
         
-        self.fecha_entry = ttk.Entry(fecha_frame, width=15)
+        self.fecha_entry = ctk.CTkEntry(fecha_frame, width=120, height=32)
         self.fecha_entry.pack(side=tk.LEFT)
         self.fecha_entry.insert(0, date.today().strftime('%Y-%m-%d'))
-        ttk.Label(fecha_frame, text="(YYYY-MM-DD)").pack(side=tk.LEFT, padx=5)
+        ctk.CTkLabel(fecha_frame, text="(YYYY-MM-DD)").pack(side=tk.LEFT, padx=5)
         
         # Horas
         self.horas_entry = UIHelpers.crear_label_entry(form_frame, "Horas:", 1, width=10)
         
         # Proyecto (opcional)
-        ttk.Label(form_frame, text="Proyecto (opcional):").grid(row=2, column=0, sticky="w", padx=5, pady=5)
-        self.proyecto_var = tk.StringVar(value="")
-        self.proyecto_combo = ttk.Combobox(form_frame, textvariable=self.proyecto_var, state="readonly", width=27)
+        ctk.CTkLabel(form_frame, text="Proyecto (opcional):").grid(row=2, column=0, sticky="w", padx=5, pady=5)
+        self.proyecto_var = ctk.StringVar(value="")
+        self.proyecto_combo = ctk.CTkComboBox(form_frame, textvariable=self.proyecto_var, state="readonly", width=27)
         self.proyecto_combo.grid(row=2, column=1, padx=5, pady=5)
         self.cargar_proyectos()
         
         # Descripción
-        ttk.Label(form_frame, text="Descripción:").grid(row=3, column=0, sticky="nw", padx=5, pady=5)
+        ctk.CTkLabel(form_frame, text="Descripción:").grid(row=3, column=0, sticky="nw", padx=5, pady=5)
         self.descripcion_text = tk.Text(form_frame, width=30, height=5)
         self.descripcion_text.grid(row=3, column=1, padx=5, pady=5)
         
@@ -134,7 +129,7 @@ class EmployeeView:
     def crear_tab_mis_registros(self):
         """Crea el tab de mis registros"""
         # Botón actualizar
-        btn_frame = tk.Frame(self.tab_registros, bg=config.COLORS['white'])
+        btn_frame = ctk.CTkFrame(self.tab_registros)
         btn_frame.pack(pady=10)
         
         UIHelpers.crear_boton(
@@ -158,7 +153,7 @@ class EmployeeView:
     def crear_tab_mis_proyectos(self):
         """Crea el tab de mis proyectos"""
         # Botón actualizar
-        btn_frame = tk.Frame(self.tab_proyectos, bg=config.COLORS['white'])
+        btn_frame = ctk.CTkFrame(self.tab_proyectos)
         btn_frame.pack(pady=10)
         
         UIHelpers.crear_boton(

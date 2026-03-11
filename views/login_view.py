@@ -3,11 +3,13 @@ Vista de inicio de sesión
 """
 
 import tkinter as tk
+import customtkinter as ctk
 from tkinter import ttk
 import config
 from controllers.auth_controller import AuthController
 from utils.validators import Validators
 from utils.ui_helpers import UIHelpers
+from utils.i18n import I18n
 
 
 class LoginView:
@@ -34,46 +36,74 @@ class LoginView:
         # Configurar ventana
         self.root.title(f"{config.APP_CONFIG['titulo_app']} - Inicio de Sesión")
         UIHelpers.centrar_ventana(self.root, 500, 400)
-        self.root.configure(bg=config.COLORS['light'])
+        self.root.configure()
         
         # Frame principal
-        main_frame = tk.Frame(self.root, bg=config.COLORS['light'])
+        main_frame = ctk.CTkFrame(self.root)
         main_frame.pack(expand=True, fill=tk.BOTH, padx=20, pady=20)
         
         # Título
-        titulo = tk.Label(
+        titulo = ctk.CTkLabel(
             main_frame,
             text=config.APP_CONFIG['nombre_empresa'].upper(),
-            font=('Arial', 24, 'bold'),
-            bg=config.COLORS['light'],
-            fg=config.COLORS['primary']
+            font=('Arial', 28, 'bold'),
+            text_color=config.COLORS['primary']
         )
-        titulo.pack(pady=10)
+        titulo.pack(pady=(10, 2))
         
-        subtitulo = tk.Label(
+        subtitulo = ctk.CTkLabel(
             main_frame,
-            text="Sistema de Gestión Empresarial",
-            font=('Arial', 12),
-            bg=config.COLORS['light'],
-            fg=config.COLORS['text']
+            text=I18n.get('login_subtitle'),
+            font=('Arial', 14))
+        subtitulo.pack(pady=(0, 15))
+        
+        # Opciones Superiores (Tema e Idioma)
+        top_opts_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
+        top_opts_frame.pack(fill=tk.X, padx=10)
+        
+        # Selector de Tema
+        tema_label = ctk.CTkLabel(top_opts_frame, text=I18n.get('theme'))
+        tema_label.pack(side=tk.LEFT, padx=(0, 5))
+        
+        self.tema_var = ctk.StringVar(value="Dark")
+        tema_combo = ctk.CTkComboBox(
+            top_opts_frame, 
+            values=["Light", "Dark", "System"],
+            variable=self.tema_var,
+            command=self.cambiar_tema,
+            width=90, height=28
         )
-        subtitulo.pack(pady=5)
+        tema_combo.pack(side=tk.LEFT, padx=(0, 15))
+        ctk.set_appearance_mode(self.tema_var.get())
+        
+        # Selector de Idioma
+        lang_label = ctk.CTkLabel(top_opts_frame, text=I18n.get('lang'))
+        lang_label.pack(side=tk.LEFT, padx=(0, 5))
+        self.lang_var = ctk.StringVar(value=I18n._current_lang.upper())
+        lang_combo = ctk.CTkComboBox(
+            top_opts_frame, 
+            values=["ES", "EN"],
+            variable=self.lang_var,
+            command=self.cambiar_idioma,
+            width=70, height=28
+        )
+        lang_combo.pack(side=tk.LEFT)
         
         # Frame de formulario
-        form_frame = UIHelpers.crear_frame_con_titulo(main_frame, "Iniciar Sesión")
-        form_frame.pack(pady=20, fill=tk.BOTH, expand=True)
+        form_frame = UIHelpers.crear_frame_con_titulo(main_frame, I18n.get('login_title'))
+        form_frame.pack(pady=15, fill=tk.BOTH, expand=True)
         
         # Campos
-        self.correo_entry = UIHelpers.crear_label_entry(form_frame, "Correo:", 0)
-        self.password_entry = UIHelpers.crear_label_entry(form_frame, "Contraseña:", 1, is_password=True)
+        self.correo_entry = UIHelpers.crear_label_entry(form_frame, I18n.get('email'), 0)
+        self.password_entry = UIHelpers.crear_label_entry(form_frame, I18n.get('password'), 1, is_password=True)
         
         # Botones
-        btn_frame = tk.Frame(form_frame, bg=config.COLORS['white'])
+        btn_frame = ctk.CTkFrame(form_frame)
         btn_frame.grid(row=2, column=0, columnspan=2, pady=20)
         
         UIHelpers.crear_boton(
             btn_frame,
-            "Iniciar Sesión",
+            I18n.get('login_btn'),
             self.iniciar_sesion,
             config.COLORS['success']
         ).pack(side=tk.LEFT, padx=5)
@@ -82,26 +112,23 @@ class LoginView:
         if AuthController.verificar_registro_habilitado():
             UIHelpers.crear_boton(
                 btn_frame,
-                "Registrarse",
+                I18n.get('register_btn'),
                 self.ir_a_registro,
                 config.COLORS['info']
             ).pack(side=tk.LEFT, padx=5)
         
         UIHelpers.crear_boton(
             btn_frame,
-            "Salir",
+            I18n.get('exit_btn'),
             self.root.quit,
             config.COLORS['danger']
         ).pack(side=tk.LEFT, padx=5)
         
         # Versión
-        version = tk.Label(
+        version = ctk.CTkLabel(
             main_frame,
-            text=f"Versión {config.APP_CONFIG['version']}",
-            font=('Arial', 8),
-            bg=config.COLORS['light'],
-            fg=config.COLORS['text']
-        )
+            text=f"{I18n.get('version')} {config.APP_CONFIG['version']}",
+            font=('Arial', 8))
         version.pack(side=tk.BOTTOM, pady=5)
     
     def iniciar_sesion(self):
@@ -111,25 +138,34 @@ class LoginView:
         
         # Validar campos vacíos
         if not correo or not password:
-            UIHelpers.mostrar_error("Error", "Por favor complete todos los campos")
+            UIHelpers.mostrar_error(I18n.get('error'), I18n.get('error_empty_fields'))
             return
         
         # Validar formato de correo
         valido, mensaje = Validators.validar_correo(correo)
         if not valido:
-            UIHelpers.mostrar_error("Error", mensaje)
+            UIHelpers.mostrar_error(I18n.get('error'), mensaje)
             return
         
         # Intentar inicio de sesión
         usuario, mensaje = AuthController.iniciar_sesion(correo, password)
         
         if usuario:
-            UIHelpers.mostrar_info("Éxito", f"Bienvenido {usuario['nombre_empleado']} {usuario['apellido_empleado']}")
+            UIHelpers.mostrar_info(I18n.get('success'), f"{I18n.get('welcome')} {usuario['nombre_empleado']} {usuario['apellido_empleado']}")
             self.on_login_success(usuario)
         else:
-            UIHelpers.mostrar_error("Error", mensaje)
+            UIHelpers.mostrar_error(I18n.get('error'), mensaje)
     
     def ir_a_registro(self):
         """Navega a la vista de registro"""
         from views.register_view import RegisterView
         RegisterView(self.root, lambda: self.setup_ui())
+
+    def cambiar_tema(self, nuevo_tema):
+        """Cambia el tema de claro a oscuro o sistema"""
+        ctk.set_appearance_mode(nuevo_tema)
+        
+    def cambiar_idioma(self, nuevo_idioma):
+        """Cambia el idioma de la aplicación y recarga la UI"""
+        I18n.set_language(nuevo_idioma.lower())
+        self.setup_ui()

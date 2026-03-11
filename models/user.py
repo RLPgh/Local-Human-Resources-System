@@ -42,8 +42,11 @@ class User:
             if not resultado:
                 return None
             
-            # Verificar contraseña
-            if bcrypt.checkpw(contraseña.encode('utf-8'), resultado['contraseña_hash'].encode('utf-8')):
+            # Verificar contraseña con soporte robusto para formatos raw de SQLite
+            db_hash = resultado['contraseña_hash']
+            hash_bytes = db_hash if isinstance(db_hash, bytes) else db_hash.encode('utf-8')
+            
+            if bcrypt.checkpw(contraseña.encode('utf-8'), hash_bytes):
                 # Remover el hash de la contraseña antes de retornar
                 resultado.pop('contraseña_hash', None)
                 return resultado

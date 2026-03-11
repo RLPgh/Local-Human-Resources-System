@@ -1,9 +1,10 @@
 """
-Módulo para manejo de conexión a la base de datos
+Módulo para manejo de conexión a la base de datos (SQLite)
 """
 
-import mysql.connector
-from mysql.connector import Error
+import sqlite3
+import os
+import re
 import config
 
 
@@ -14,12 +15,25 @@ class Database:
     def connect():
         """Establece conexión con la base de datos"""
         try:
-            connection = mysql.connector.connect(**config.DB_CONFIG)
+            # Obtener directorio base para asegurar que la db se cree en el lugar correcto
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            db_path = os.path.join(base_dir, config.DB_CONFIG.get('database', 'dbEmpresa.db'))
+            
+            connection = sqlite3.connect(db_path)
+            # Activar foreign keys (desactivadas por defecto en sqlite)
+            connection.execute("PRAGMA foreign_keys = ON;")
+            # Devolver diccionarios en lugar de tuplas para simular dictionary=True de MySQL
+            connection.row_factory = sqlite3.Row
             return connection
-        except Error as e:
+        except sqlite3.Error as e:
             print(f"Error al conectar a la base de datos: {e}")
             return None
     
+    @staticmethod
+    def _convert_query(query):
+        """Convierte los placeholders de MySQL (%s) a SQLite (?)"""
+        return query.replace('%s', '?')
+
     @staticmethod
     def execute_query(query, params=None, fetchone=False):
         """
@@ -37,18 +51,25 @@ class Database:
         if not connection:
             return None
         
+        cursor = None
         try:
-            cursor = connection.cursor(dictionary=True)
-            cursor.execute(query, params or ())
-            result = cursor.fetchone() if fetchone else cursor.fetchall()
-            return result
-        except Error as e:
+            cursor = connection.cursor()
+            sqlite_query = Database._convert_query(query)
+            cursor.execute(sqlite_query, params or ())
+            
+            if fetchone:
+                row = cursor.fetchone()
+                return dict(row) if row else None
+            else:
+                rows = cursor.fetchall()
+                return [dict(row) for row in rows]
+        except sqlite3.Error as e:
             print(f"Error en consulta: {e}")
             return None
         finally:
             if cursor:
                 cursor.close()
-            if connection and connection.is_connected():
+            if connection:
                 connection.close()
     
     @staticmethod
@@ -67,9 +88,11 @@ class Database:
         if not connection:
             return None
         
+        cursor = None
         try:
             cursor = connection.cursor()
-            cursor.execute(query, params or ())
+            sqlite_query = Database._convert_query(query)
+            cursor.execute(sqlite_query, params or ())
             connection.commit()
             
             # Si es INSERT, devolver el ID insertado
@@ -77,13 +100,13 @@ class Database:
                 return cursor.lastrowid
             # Para UPDATE/DELETE, devolver número de filas afectadas
             return cursor.rowcount
-        except Error as e:
-            print(f"Error en comando: {e}")
+        except sqlite3.Error as e:
+            print(f"Error en comando: {e}\nQuery: {query}\nParams: {params}")
             if connection:
                 connection.rollback()
             return None
         finally:
             if cursor:
                 cursor.close()
-            if connection and connection.is_connected():
+            if connection:
                 connection.close()

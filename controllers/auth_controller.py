@@ -53,6 +53,18 @@ class AuthController:
         return None, "Error al registrar usuario"
     
     @staticmethod
+    def determinar_rol_inicial():
+        """
+        Si la base de datos está vacía, devuelve el código 100 de Admin.
+        Si ya hay alguien, devuelve None.
+        """
+        from models.database import Database
+        result = Database.execute_query("SELECT COUNT(*) as total FROM usuarios", fetchone=True)
+        if result and result.get('total', 0) == 0:
+            return 100  # Administrador RH (obligatorio para el primero)
+        return None
+    
+    @staticmethod
     def verificar_registro_habilitado():
         """
         Verifica si el registro público está habilitado
@@ -64,14 +76,20 @@ class AuthController:
     
     @staticmethod
     def cambiar_estado_registro(habilitado):
-        """
-        Cambia el estado del registro público
-        
-        Args:
-            habilitado: True para habilitar, False para deshabilitar
-            
-        Returns:
-            True si se cambió exitosamente
-        """
         config.APP_CONFIG['registro_publico_habilitado'] = habilitado
+        return True
+        
+    @staticmethod
+    def obtener_roles_permitidos():
+        """
+        Retorna la lista de roles permitidos para el registro público.
+        """
+        return config.APP_CONFIG.get('roles_registro_permitidos', [102])
+        
+    @staticmethod
+    def actualizar_roles_permitidos(lista_roles_ids):
+        """
+        Actualiza los roles desde la configuración del Administrador
+        """
+        config.APP_CONFIG['roles_registro_permitidos'] = lista_roles_ids
         return True

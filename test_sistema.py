@@ -68,14 +68,23 @@ def test_models():
         return False
 
 def test_views():
-    """Prueba las vistas"""
-    print("\n[TEST 5] Vistas...")
+    """Prueba las vistas y herramientas avanzadas"""
+    print("\n[TEST 5] Vistas y Extensiones V3...")
     try:
         from views.login_view import LoginView
         from views.admin_view import AdminView
         from views.manager_view import ManagerView
         from views.employee_view import EmployeeView
-        print("✅ Todas las vistas cargadas correctamente")
+        from views.analytics_view import AnalyticsView
+        from utils.i18n import I18n
+        from utils.data_generator import DataGenerator
+        import matplotlib
+        
+        # Test basic i18n toggle
+        I18n.set_language('en')
+        assert I18n.get('login_btn') == 'Log In'
+        
+        print("✅ Todas las vistas y modulos cargados correctamente (incl. Matplotlib & i18n)")
         return True
     except Exception as e:
         print(f"❌ Error: {e}")

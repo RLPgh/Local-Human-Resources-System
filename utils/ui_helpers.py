@@ -3,6 +3,7 @@ Helpers para la interfaz de usuario
 """
 
 import tkinter as tk
+import customtkinter as ctk
 from tkinter import ttk, messagebox
 import config
 
@@ -26,7 +27,7 @@ class UIHelpers:
         ventana.geometry(f'{ancho}x{alto}+{x}+{y}')
     
     @staticmethod
-    def crear_label_entry(parent, texto, row, column=0, is_password=False, width=30):
+    def crear_label_entry(parent, texto, row, column=0, is_password=False, width=220):
         """
         Crea un label y un entry en el grid
         
@@ -36,16 +37,16 @@ class UIHelpers:
             row: Fila del grid
             column: Columna del grid (default 0)
             is_password: Si es campo de contraseña (default False)
-            width: Ancho del entry (default 30)
+            width: Ancho del entry en píxeles (default 220)
             
         Returns:
             Entry widget
         """
-        label = ttk.Label(parent, text=texto)
-        label.grid(row=row, column=column, sticky="w", padx=5, pady=5)
+        label = ctk.CTkLabel(parent, text=texto, font=("Arial", 13))
+        label.grid(row=row, column=column, sticky="w", padx=(5, 10), pady=8)
         
-        entry = ttk.Entry(parent, width=width, show="*" if is_password else "")
-        entry.grid(row=row, column=column+1, padx=5, pady=5)
+        entry = ctk.CTkEntry(parent, width=width, height=32, corner_radius=6, border_width=1, show="*" if is_password else "")
+        entry.grid(row=row, column=column+1, padx=5, pady=8)
         
         return entry
     
@@ -70,17 +71,12 @@ class UIHelpers:
         Returns:
             Button widget
         """
-        boton = tk.Button(
+        boton = ctk.CTkButton(
             parent,
             text=texto,
             command=comando,
-            bg=color or config.COLORS['primary'],
-            fg=config.COLORS['white'],
-            font=('Arial', 10, 'bold'),
-            cursor='hand2',
-            relief=tk.FLAT,
-            padx=10,
-            pady=5
+            fg_color=color or config.COLORS['primary'],
+            cursor='hand2'
         )
         
         if row is not None and column is not None:
@@ -104,7 +100,7 @@ class UIHelpers:
         """
         # Frame contenedor
         frame = ttk.Frame(parent)
-        frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        frame.pack(fill=tk.BOTH, expand=True, padx=5, )
         
         # Scrollbars
         scrollbar_y = ttk.Scrollbar(frame, orient=tk.VERTICAL)
@@ -180,14 +176,27 @@ class UIHelpers:
     @staticmethod
     def crear_frame_con_titulo(parent, titulo):
         """
-        Crea un LabelFrame con título
+        Crea un LabelFrame con título (Adaptado a CTk)
         
         Args:
             parent: Widget padre
             titulo: Título del frame
             
         Returns:
-            LabelFrame widget
+            Frame widget interior
         """
-        frame = ttk.LabelFrame(parent, text=titulo, padding=10)
-        return frame
+        outer_frame = ctk.CTkFrame(parent, corner_radius=10)
+        label = ctk.CTkLabel(outer_frame, text=titulo, font=('Arial', 14, 'bold'))
+        label.pack(pady=(10, 5), padx=10, anchor="w")
+        inner_frame = ctk.CTkFrame(outer_frame, fg_color="transparent")
+        inner_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
+        # Add a reference to the outer frame so we can pack it via the inner frame 
+        # Actually, if the user calls frame.pack(), they pack inner_frame which won't pack outer_frame.
+        # But wait, python allows us to override pack:
+        def custom_pack(**kwargs):
+            outer_frame.pack(**kwargs)
+        def custom_grid(**kwargs):
+            outer_frame.grid(**kwargs)
+        inner_frame.pack = custom_pack
+        inner_frame.grid = custom_grid
+        return inner_frame
