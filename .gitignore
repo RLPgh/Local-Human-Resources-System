@@ -45,7 +45,7 @@ desktop.ini
 *.sqlite
 *.sqlite3
 
-# Configuración local (descomentar si no quieres subir tu config)
+# Configuración local (descomentar si no quieres subir tu config.py)
 # config.py
 
 # Informes generados
