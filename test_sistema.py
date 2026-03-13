@@ -69,7 +69,7 @@ def test_models():
 
 def test_views():
     """Prueba las vistas y herramientas avanzadas"""
-    print("\n[TEST 5] Vistas y Extensiones V3...")
+    print("\n[TEST 5] Vistas y Extensiones...")
     try:
         from views.login_view import LoginView
         from views.admin_view import AdminView

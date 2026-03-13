@@ -21,7 +21,7 @@ python iniciar_sistema.py
 
 ---
 
-## 🚀 Características (v3.0.0)
+## 🚀 Características (v0.2.0)
 
 - **Interfaz Moderna** con CustomTkinter (Modo Claro/Oscuro).
 - **Base de Datos Zero-Config**: Portabilidad total gracias a SQLite.

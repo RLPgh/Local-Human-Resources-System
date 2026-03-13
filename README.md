@@ -21,7 +21,7 @@ python iniciar_sistema.py
 
 ---
 
-## 🚀 Features (v3.0.0)
+## 🚀 Features (v0.2.0)
 
 - **Modern GUI** with CustomTkinter (Dark/Light themes).
 - **Zero-Config Database**: Powered by SQLite for true portability.

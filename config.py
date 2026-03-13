@@ -1,3 +1,14 @@
+import os
+
+# Leer versión desde archivo centralizado
+def _read_version():
+    version_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'VERSION')
+    try:
+        with open(version_file, 'r') as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        return '0.0.0'
+
 # Configuración de conexión a la base de datos
 DB_CONFIG = {
     'database': 'dbEmpresa.db'
@@ -6,7 +17,7 @@ DB_CONFIG = {
 # Configuración de la aplicación
 APP_CONFIG = {
     'nombre_empresa': 'NexusHR',
-    'version': '3.0.0',
+    'version': _read_version(),
     'titulo_app': 'Gestión de RRHH - NexusHR',
     'registro_publico_habilitado': True,  # Controla si el registro público (el botón) está visible
     'roles_registro_permitidos': [102]    # Por defecto, solo permite registrar Empleado

@@ -18,7 +18,7 @@ INSTRUCCIONES:
 3. ¡Listo!
 
 AUTOR: Sistema RH
-VERSION: 2.0.0
+VERSION: 0.2.0
 """
 
 import sys
